@@ -1,0 +1,6 @@
+@SimsimiChat_HostAddress = http://localhost:5173
+
+GET {{SimsimiChat_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
