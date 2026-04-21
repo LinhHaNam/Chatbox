@@ -19,4 +19,6 @@ jobs:
           # Lệnh này sẽ tạo ra file .env bên trong thư mục simsimiFE để Vite có thể đọc được khi build
           "VITE_API_URL=http://localhost:5000" | Out-File -FilePath ./simsimiFE/.env -Encoding utf8
 
+$env:CI = "false"
+
                    docker compose up -d --build
