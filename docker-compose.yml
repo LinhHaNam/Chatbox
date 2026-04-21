@@ -7,13 +7,13 @@ services:
     container_name: simsimi-db
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=Sa@123 # Thay mật khẩu của bạn ở đây
+      - MSSQL_SA_PASSWORD=Sa@123456 # Đã thêm 456 để đủ 9 ký tự
     ports:
       - "1433:1433"
     networks:
       - simsimi-network
     volumes:
-      - sql_data:/var/opt/mssql
+      - sql_data_v2:/var/opt/mssql # Đổi tên volume để reset lại DB
 
   # 2. Backend: C# ASP.NET Core
   backend:
@@ -24,8 +24,10 @@ services:
     ports:
       - "5000:8080" # Máy khách gọi cổng 5000, Docker đẩy vào 8080 của App
     environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=SimsimiDb;User Id=sa;Password=Sa@123;TrustServerCertificate=True;
+      # Passowrd ở đây phải khớp 100% với password của db ở trên
+      - ConnectionStrings__DefaultConnection=Server=db;Database=SimsimiDb;User Id=sa;Password=Sa@123456;TrustServerCertificate=True;
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080 # Ép C# mở cửa đúng cổng 8080 bên trong Docker
     depends_on:
       - db
     networks:
@@ -49,4 +51,4 @@ networks:
     driver: bridge
 
 volumes:
-  sql_data:
+  sql_data_v2: # Nhớ đổi tên ở dưới cùng này nữa
