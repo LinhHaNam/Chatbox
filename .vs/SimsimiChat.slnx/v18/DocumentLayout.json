@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "D:\\Project\\SimsimiChat\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8EA05CCF-8ABA-53C4-8BCF-1EB0B124D53F}|SimsimiChat\\SimsimiChat.csproj|d:\\project\\simsimichat\\simsimichat\\models\\chatsession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8EA05CCF-8ABA-53C4-8BCF-1EB0B124D53F}|SimsimiChat\\SimsimiChat.csproj|solutionrelative:simsimichat\\models\\chatsession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8EA05CCF-8ABA-53C4-8BCF-1EB0B124D53F}|SimsimiChat\\SimsimiChat.csproj|d:\\project\\simsimichat\\simsimichat\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{8EA05CCF-8ABA-53C4-8BCF-1EB0B124D53F}|SimsimiChat\\SimsimiChat.csproj|solutionrelative:simsimichat\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8EA05CCF-8ABA-53C4-8BCF-1EB0B124D53F}|SimsimiChat\\SimsimiChat.csproj|d:\\project\\simsimichat\\simsimichat\\models\\chatsession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8EA05CCF-8ABA-53C4-8BCF-1EB0B124D53F}|SimsimiChat\\SimsimiChat.csproj|solutionrelative:simsimichat\\models\\chatsession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8EA05CCF-8ABA-53C4-8BCF-1EB0B124D53F}|SimsimiChat\\SimsimiChat.csproj|d:\\project\\simsimichat\\simsimichat\\services\\openaiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,7 +38,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 194,
+          "SelectedChildIndex": 195,
           "Children": [
             {
               "$type": "Bookmark",
@@ -818,26 +818,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "ChatSession.cs",
               "DocumentMoniker": "D:\\Project\\SimsimiChat\\SimsimiChat\\Models\\ChatSession.cs",
               "RelativeDocumentMoniker": "SimsimiChat\\Models\\ChatSession.cs",
               "ToolTip": "D:\\Project\\SimsimiChat\\SimsimiChat\\Models\\ChatSession.cs",
               "RelativeToolTip": "SimsimiChat\\Models\\ChatSession.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAA1wBMAAAAzAAAAAAAAAA==",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAQwBMAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-20T10:08:27.019Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "launchSettings.json",
               "DocumentMoniker": "D:\\Project\\SimsimiChat\\SimsimiChat\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "SimsimiChat\\Properties\\launchSettings.json",
               "ToolTip": "D:\\Project\\SimsimiChat\\SimsimiChat\\Properties\\launchSettings.json",
               "RelativeToolTip": "SimsimiChat\\Properties\\launchSettings.json",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAABoAAAAvAAAAAAAAAA==",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACIAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-04-20T09:37:34.597Z",
               "EditorCaption": ""
@@ -864,8 +864,7 @@
               "RelativeToolTip": "SimsimiChat\\Services\\OpenAiService.cs",
               "ViewState": "AgIAABgAAAAAAAAAAAAowLUAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-20T07:18:47.295Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-20T07:18:47.295Z"
             },
             {
               "$type": "Document",
