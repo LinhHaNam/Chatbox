@@ -2,24 +2,31 @@ name: Simsimi Auto Deploy
 
 on:
   push:
-    branches: [ "main" ] # Hoặc "master" tùy nhánh chính của bạn
+    branches: [ "main" ]
 
 jobs:
   deploy-local:
-    runs-on: self-hosted # Chạy trên máy bạn đã cài Runner
+    runs-on: self-hosted # Đang chạy trực tiếp trên máy của Linh
     
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Deploy with Docker Compose
+        # ĐÂY LÀ CHỖ QUAN TRỌNG: Lấy Secret từ GitHub gắn vào môi trường của máy
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         shell: powershell
         run: |
           # 1. TẠO FILE .ENV CHO FRONTEND
-          # Thêm CI=false để bỏ qua các cảnh báo khắt khe khi build
-          "VITE_API_URL=http://localhost:5000" | Out-File -FilePath ./simsimiFE/.env -Encoding utf8
-          "CI=false" | Out-File -FilePath ./simsimiFE/.env -Encoding utf8 -Append
+          # Nếu bạn muốn dùng trên thiết bị khác, hãy thay localhost bằng IP Wifi của bạn
+          "VITE_API_URL=http://localhost:5000`nCI=false" | Out-File -FilePath ./simsimiFE/.env -Encoding utf8
 
-          # 2. KIỂM TRA VÀ BUILD VỚI DOCKER COMPOSE
-          # Lệnh này sẽ tự động build lại image và cập nhật container
+          # 2. DỌN DẸP TRƯỚC KHI BUILD (Để tránh lỗi Conflict container name)
+          docker compose down --remove-orphans
+
+          # 3. BUILD VÀ CHẠY
+          # Docker Compose sẽ tự động lấy các biến env ở trên để lấp vào file .yml
           docker compose up -d --build
