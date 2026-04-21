@@ -15,6 +15,8 @@ jobs:
       - name: Deploy with Docker Compose
         shell: powershell
         run: |
-          # Di chuyển vào thư mục chứa code (GitHub tự động tải về thư mục làm việc của Runner)
-          # Lệnh này sẽ build lại các Dockerfile và khởi động lại container
-          docker compose up -d --build
+          # 1. TẠO FILE .ENV TẠM THỜI CHO FRONTEND
+          # Lệnh này sẽ tạo ra file .env bên trong thư mục simsimiFE để Vite có thể đọc được khi build
+          "VITE_API_URL=http://localhost:5000" | Out-File -FilePath ./simsimiFE/.env -Encoding utf8
+
+                   docker compose up -d --build
