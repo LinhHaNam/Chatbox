@@ -140,3 +140,4 @@ D:\Project\SimsimiChat\SimsimiChat\obj\Debug\net8.0\refint\SimsimiChat.dll
 D:\Project\SimsimiChat\SimsimiChat\obj\Debug\net8.0\SimsimiChat.pdb
 D:\Project\SimsimiChat\SimsimiChat\obj\Debug\net8.0\SimsimiChat.genruntimeconfig.cache
 D:\Project\SimsimiChat\SimsimiChat\obj\Debug\net8.0\ref\SimsimiChat.dll
+D:\Project\SimsimiChat\SimsimiChat\obj\Debug\net8.0\SimsimiChat.sourcelink.json
