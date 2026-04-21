@@ -828,7 +828,7 @@
               "RelativeDocumentMoniker": "SimsimiChat\\Program.cs",
               "ToolTip": "D:\\Project\\SimsimiChat\\SimsimiChat\\Program.cs",
               "RelativeToolTip": "SimsimiChat\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAJsAAAAAAAAAAAAowK8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-21T06:12:51.197Z",
               "EditorCaption": ""
@@ -855,8 +855,7 @@
               "RelativeToolTip": "SimsimiChat\\Properties\\launchSettings.json",
               "ViewState": "AgIAABUAAAAAAAAAAAAgwCEAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-20T09:37:34.597Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-20T09:37:34.597Z"
             },
             {
               "$type": "Document",
@@ -868,8 +867,7 @@
               "RelativeToolTip": "SimsimiChat\\appsettings.json",
               "ViewState": "AgIAAAQAAAAAAAAAAAAgwBgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-20T07:17:36.908Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-20T07:17:36.908Z"
             },
             {
               "$type": "Document",
@@ -893,8 +891,7 @@
               "RelativeToolTip": "SimsimiChat\\appsettings.Development.json",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAAwAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-20T08:26:28.704Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-20T08:26:28.704Z"
             },
             {
               "$type": "Document",
