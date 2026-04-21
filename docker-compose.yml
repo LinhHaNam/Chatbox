@@ -36,7 +36,7 @@ services:
       Jwt__RefreshTokenExpirationDays: 7
 
       # --- CẤU HÌNH OPENAI (Để tránh lỗi tiếp theo) ---
-      OpenAI__ApiKey: "AIzaSyCWkgOZholT3DPcqU0eXrt5luCZrERcO6M"
+      OpenAI__ApiKey: "AIzaSyCksBgyqfBkMoKZTMuK6p0L-CMin3k5Pp8"
       OpenAI__Model: "gemini-2.5-flash"
       
       Cors__AllowedOrigins__0: http://localhost:3000
