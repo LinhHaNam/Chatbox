@@ -17,5 +17,4 @@ jobs:
         run: |
           # Di chuyển vào thư mục chứa code (GitHub tự động tải về thư mục làm việc của Runner)
           # Lệnh này sẽ build lại các Dockerfile và khởi động lại container
-          docker compose down
           docker compose up -d --build
