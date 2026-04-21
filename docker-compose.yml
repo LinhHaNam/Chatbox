@@ -37,7 +37,7 @@ services:
 
       # --- CẤU HÌNH OPENAI (Để tránh lỗi tiếp theo) ---
       OpenAI__ApiKey: "AIzaSyCWkgOZholT3DPcqU0eXrt5luCZrERcO6M"
-      OpenAI__Model: "gemini-2.5-flash"
+      OpenAI__Model: "gemini-1.5-flash"
       
       Cors__AllowedOrigins__0: http://localhost:3000
       Cors__AllowedOrigins__1: http://localhost:5173
