@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # 1. Database: SQL Server
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: simsimi-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Sa@123 # Thay mật khẩu của bạn ở đây
+    ports:
+      - "1433:1433"
+    networks:
+      - simsimi-network
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  # 2. Backend: C# ASP.NET Core
+  backend:
+    build:
+      context: ./SimsimiChat
+      dockerfile: Dockerfile
+    container_name: simsimi-backend
+    ports:
+      - "5000:8080" # Máy khách gọi cổng 5000, Docker đẩy vào 8080 của App
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=SimsimiDb;User Id=sa;Password=Sa@123;TrustServerCertificate=True;
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - db
+    networks:
+      - simsimi-network
+
+  # 3. Frontend: ReactJS (Vite)
+  frontend:
+    build:
+      context: ./simsimiFE
+      dockerfile: Dockerfile
+    container_name: simsimi-frontend
+    ports:
+      - "3000:80" # Truy cập web qua cổng 3000
+    depends_on:
+      - backend
+    networks:
+      - simsimi-network
+
+networks:
+  simsimi-network:
+    driver: bridge
+
+volumes:
+  sql_data:
