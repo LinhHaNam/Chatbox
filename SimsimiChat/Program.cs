@@ -132,7 +132,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
 // Use CORS
 app.UseCors("AllowAll");
