@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy-local:
-    runs-on: self-hosted # Chạy trên cái máy bạn vừa cài Runner
+    runs-on: self-hosted # Chạy trên máy bạn đã cài Runner
     
     steps:
       - name: Checkout Code
@@ -15,10 +15,11 @@ jobs:
       - name: Deploy with Docker Compose
         shell: powershell
         run: |
-          # 1. TẠO FILE .ENV TẠM THỜI CHO FRONTEND
-          # Lệnh này sẽ tạo ra file .env bên trong thư mục simsimiFE để Vite có thể đọc được khi build
+          # 1. TẠO FILE .ENV CHO FRONTEND
+          # Thêm CI=false để bỏ qua các cảnh báo khắt khe khi build
           "VITE_API_URL=http://localhost:5000" | Out-File -FilePath ./simsimiFE/.env -Encoding utf8
+          "CI=false" | Out-File -FilePath ./simsimiFE/.env -Encoding utf8 -Append
 
-$env:CI = "false"
-
-                   docker compose up -d --build
+          # 2. KIỂM TRA VÀ BUILD VỚI DOCKER COMPOSE
+          # Lệnh này sẽ tự động build lại image và cập nhật container
+          docker compose up -d --build
