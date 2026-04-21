@@ -27,16 +27,16 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: Server=tcp:db,1433;Database=SimsimiDb;User Id=sa;Password=Sa@123456;Encrypt=False;TrustServerCertificate=True;
+      ConnectionStrings__DefaultConnection: Server=tcp:db,1433;Database=SimsimiDb;User Id=sa;Password=${DB_PASSWORD};Encrypt=False;TrustServerCertificate=True;
       
-      Jwt__SecretKey: "your-super-secret-key-change-this-in-production-min-32-chars-long!"
+      Jwt__SecretKey: "${JWT_SECRET_KEY}"
       Jwt__Issuer: "SimsimiChatApp"
       Jwt__Audience: "SimsimiChatUsers"
       Jwt__AccessTokenExpirationMinutes: 15
       Jwt__RefreshTokenExpirationDays: 7
 
       # --- CẤU HÌNH OPENAI (Để tránh lỗi tiếp theo) ---
-      OpenAI__ApiKey: "AIzaSyCksBgyqfBkMoKZTMuK6p0L-CMin3k5Pp8"
+      OpenAI__ApiKey: "${GEMINI_API_KEY}"
       OpenAI__Model: "gemini-2.5-flash"
       
       Cors__AllowedOrigins__0: http://localhost:3000
