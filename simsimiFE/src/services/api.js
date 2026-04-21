@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:7150/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 class ApiClient {
   constructor() {
@@ -68,7 +68,7 @@ class ApiClient {
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) throw new Error('No refresh token');
 
-    const { data } = await this.request('/auth/refresh', {
+    const { data } = await this.request('/auth/refresh-token', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
     });

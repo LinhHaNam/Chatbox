@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SimsimiChat")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+623378537efbf72260f9deb5efa74a26b530de0c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f1bfd8c08ce8a61baf454b37682a89263aa2467a")]
 [assembly: System.Reflection.AssemblyProductAttribute("SimsimiChat")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SimsimiChat")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,54 +1,48 @@
-version: '3.8'
-
 services:
-  # 1. Database: SQL Server
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: simsimi-db
     environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=Sa@123456
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: Sa@123456
     ports:
       - "1433:1433"
-    networks:
-      - simsimi-network
     volumes:
       - sql_data_v2:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" -C || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - simsimi-network
 
-  # 2. Backend: C# ASP.NET Core
   backend:
     build:
       context: ./SimsimiChat
-      dockerfile: Dockerfile
     container_name: simsimi-backend
     ports:
       - "5000:8080"
     environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=SimsimiDb;User Id=sa;Password=Sa@123456;TrustServerCertificate=True;
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
-      
-      # CẤU HÌNH JWT (Lấy từ appsettings.json của bạn)
-      - Jwt__SecretKey=your-super-secret-key-change-this-in-production-min-32-chars-long!
-      - Jwt__Issuer=SimsimiChatApp
-      - Jwt__Audience=SimsimiChatUsers
-      - Jwt__AccessTokenExpirationMinutes=15
-      - Jwt__RefreshTokenExpirationDays=7
-
-      # CẤU HÌNH OPENAI (Nếu BE của bạn cũng check cái này khi khởi tạo)
-      - OpenAI__ApiKey=AIzaSyCWkgOZholT3DPcqU0eXrt5luCZrERcO6M
-      - OpenAI__Model=gemini-2.5-flash
-
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Server=tcp:db,1433;Database=SimsimiDb;User Id=sa;Password=Sa@123456;Encrypt=False;TrustServerCertificate=True;
+      Cors__AllowedOrigins__0: http://localhost:3000
+      Cors__AllowedOrigins__1: http://localhost:5173
+      Cors__AllowedOrigins__2: http://127.0.0.1:3000
+      Cors__AllowedOrigins__3: http://127.0.0.1:5173
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - simsimi-network
 
-  # 3. Frontend: ReactJS (Vite)
   frontend:
     build:
       context: ./simsimiFE
-      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api
     container_name: simsimi-frontend
     ports:
       - "3000:80"
