@@ -7,13 +7,13 @@ services:
     container_name: simsimi-db
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=Sa@123456 # Đã thêm 456 để đủ 9 ký tự
+      - MSSQL_SA_PASSWORD=Sa@123456
     ports:
       - "1433:1433"
     networks:
       - simsimi-network
     volumes:
-      - sql_data_v2:/var/opt/mssql # Đổi tên volume để reset lại DB
+      - sql_data_v2:/var/opt/mssql
 
   # 2. Backend: C# ASP.NET Core
   backend:
@@ -22,12 +22,23 @@ services:
       dockerfile: Dockerfile
     container_name: simsimi-backend
     ports:
-      - "5000:8080" # Máy khách gọi cổng 5000, Docker đẩy vào 8080 của App
+      - "5000:8080"
     environment:
-      # Passowrd ở đây phải khớp 100% với password của db ở trên
       - ConnectionStrings__DefaultConnection=Server=db;Database=SimsimiDb;User Id=sa;Password=Sa@123456;TrustServerCertificate=True;
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080 # Ép C# mở cửa đúng cổng 8080 bên trong Docker
+      - ASPNETCORE_URLS=http://+:8080
+      
+      # CẤU HÌNH JWT (Lấy từ appsettings.json của bạn)
+      - Jwt__SecretKey=your-super-secret-key-change-this-in-production-min-32-chars-long!
+      - Jwt__Issuer=SimsimiChatApp
+      - Jwt__Audience=SimsimiChatUsers
+      - Jwt__AccessTokenExpirationMinutes=15
+      - Jwt__RefreshTokenExpirationDays=7
+
+      # CẤU HÌNH OPENAI (Nếu BE của bạn cũng check cái này khi khởi tạo)
+      - OpenAI__ApiKey=AIzaSyCWkgOZholT3DPcqU0eXrt5luCZrERcO6M
+      - OpenAI__Model=gemini-2.5-flash
+
     depends_on:
       - db
     networks:
@@ -40,7 +51,7 @@ services:
       dockerfile: Dockerfile
     container_name: simsimi-frontend
     ports:
-      - "3000:80" # Truy cập web qua cổng 3000
+      - "3000:80"
     depends_on:
       - backend
     networks:
@@ -51,4 +62,4 @@ networks:
     driver: bridge
 
 volumes:
-  sql_data_v2: # Nhớ đổi tên ở dưới cùng này nữa
+  sql_data_v2:
