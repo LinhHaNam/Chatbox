@@ -92,9 +92,20 @@ public class ChatService : IChatService
     {
         try
         {
-            return await _context.ChatSessions
-                .Include(s => s.Messages)
+            var session = await _context.ChatSessions
+                .Include(s => s.Messages.OrderBy(m => m.SequenceNumber).ThenBy(m => m.CreatedAt).ThenBy(m => m.Id))
                 .FirstOrDefaultAsync(s => s.Id == sessionId);
+
+            if (session?.Messages != null)
+            {
+                session.Messages = session.Messages
+                    .OrderBy(m => m.SequenceNumber ?? int.MaxValue)
+                    .ThenBy(m => m.CreatedAt ?? DateTime.MinValue)
+                    .ThenBy(m => m.Id)
+                    .ToList();
+            }
+
+            return session;
         }
         catch (Exception ex)
         {
@@ -110,11 +121,22 @@ public class ChatService : IChatService
     {
         try
         {
-            return await _context.ChatSessions
+            var sessions = await _context.ChatSessions
                 .Where(s => s.UserId == userId)
                 .OrderByDescending(s => s.LastActiveAt)
-                .Include(s => s.Messages)
+                .Include(s => s.Messages.OrderBy(m => m.SequenceNumber).ThenBy(m => m.CreatedAt).ThenBy(m => m.Id))
                 .ToListAsync();
+
+            foreach (var session in sessions)
+            {
+                session.Messages = session.Messages
+                    .OrderBy(m => m.SequenceNumber ?? int.MaxValue)
+                    .ThenBy(m => m.CreatedAt ?? DateTime.MinValue)
+                    .ThenBy(m => m.Id)
+                    .ToList();
+            }
+
+            return sessions;
         }
         catch (Exception ex)
         {
@@ -135,11 +157,17 @@ public class ChatService : IChatService
                 throw new ArgumentException("Message content cannot be empty", nameof(content));
             }
 
+            var normalizedSenderType = NormalizeSenderType(senderType);
+            var nextSequenceNumber = (await _context.Messages
+                .Where(m => m.SessionId == sessionId)
+                .MaxAsync(m => (int?)m.SequenceNumber) ?? 0) + 1;
+
             var message = new Message
             {
                 Id = Guid.NewGuid(),
                 SessionId = sessionId,
-                SenderType = senderType, // "User" or "Bot"
+                SequenceNumber = nextSequenceNumber,
+                SenderType = normalizedSenderType,
                 Content = content,
                 CreatedAt = DateTime.UtcNow
             };
@@ -174,7 +202,9 @@ public class ChatService : IChatService
         {
             return await _context.Messages
                 .Where(m => m.SessionId == sessionId)
-                .OrderBy(m => m.CreatedAt)
+                .OrderBy(m => m.SequenceNumber)
+                .ThenBy(m => m.CreatedAt)
+                .ThenBy(m => m.Id)
                 .ToListAsync();
         }
         catch (Exception ex)
@@ -245,5 +275,12 @@ public class ChatService : IChatService
             _logger.LogError(ex, "Error deleting chat session");
             return false;
         }
+    }
+
+    private static string NormalizeSenderType(string senderType)
+    {
+        return string.Equals(senderType, "User", StringComparison.OrdinalIgnoreCase)
+            ? "User"
+            : "Bot";
     }
 }

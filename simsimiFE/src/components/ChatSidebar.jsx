@@ -19,6 +19,18 @@ export default function ChatSidebar({
     [...messages]
       .map((message, index) => ({ message, index }))
       .sort((left, right) => {
+        const leftSequence = Number(left.message?.sequenceNumber);
+        const rightSequence = Number(right.message?.sequenceNumber);
+
+        if (Number.isFinite(leftSequence) || Number.isFinite(rightSequence)) {
+          const normalizedLeftSequence = Number.isFinite(leftSequence) ? leftSequence : Number.MAX_SAFE_INTEGER;
+          const normalizedRightSequence = Number.isFinite(rightSequence) ? rightSequence : Number.MAX_SAFE_INTEGER;
+
+          if (normalizedLeftSequence !== normalizedRightSequence) {
+            return normalizedLeftSequence - normalizedRightSequence;
+          }
+        }
+
         const leftTime = left.message?.createdAt ? new Date(left.message.createdAt).getTime() : 0;
         const rightTime = right.message?.createdAt ? new Date(right.message.createdAt).getTime() : 0;
 

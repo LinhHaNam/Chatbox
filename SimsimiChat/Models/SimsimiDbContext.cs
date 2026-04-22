@@ -44,6 +44,7 @@ public partial class SimsimiDbContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.SequenceNumber);
             entity.Property(e => e.SenderType)
                 .HasMaxLength(50)
                 .IsUnicode(false);

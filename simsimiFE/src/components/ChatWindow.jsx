@@ -9,10 +9,20 @@ const getMessageTimestamp = (message) => {
   return Number.isNaN(timestamp) ? 0 : timestamp;
 };
 
+const getMessageSequence = (message) => {
+  const value = Number(message?.sequenceNumber);
+  return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER;
+};
+
 const getSortedMessages = (messages = []) =>
   [...messages]
     .map((message, index) => ({ message, index }))
     .sort((left, right) => {
+      const sequenceDiff = getMessageSequence(left.message) - getMessageSequence(right.message);
+      if (sequenceDiff !== 0) {
+        return sequenceDiff;
+      }
+
       const timestampDiff = getMessageTimestamp(left.message) - getMessageTimestamp(right.message);
       if (timestampDiff !== 0) {
         return timestampDiff;

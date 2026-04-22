@@ -9,6 +9,8 @@ public partial class Message
 
     public Guid SessionId { get; set; }
 
+    public int? SequenceNumber { get; set; }
+
     public string SenderType { get; set; } = null!;
 
     public string Content { get; set; } = null!;

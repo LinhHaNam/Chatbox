@@ -145,6 +145,16 @@ using (var scope = app.Services.CreateScope())
             context.Database.Migrate();
             Console.WriteLine("Database Migrated Successfully!");
         }
+
+        const string ensureMessageSequenceColumnSql = """
+            IF COL_LENGTH('Messages', 'SequenceNumber') IS NULL
+            BEGIN
+                ALTER TABLE Messages ADD SequenceNumber INT NULL;
+            END;
+        """;
+
+        context.Database.ExecuteSqlRaw(ensureMessageSequenceColumnSql);
+        await RepairMessageSequenceNumbersAsync(context);
     }
     catch (Exception ex)
     {
@@ -173,3 +183,68 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static async Task RepairMessageSequenceNumbersAsync(SimsimiDbContext context)
+{
+    var sessionsWithMissingSequence = await context.Messages
+        .Where(message => message.SequenceNumber == null)
+        .Select(message => message.SessionId)
+        .Distinct()
+        .ToListAsync();
+
+    if (sessionsWithMissingSequence.Count == 0)
+    {
+        return;
+    }
+
+    foreach (var sessionId in sessionsWithMissingSequence)
+    {
+        var messages = await context.Messages
+            .Where(message => message.SessionId == sessionId)
+            .OrderBy(message => message.CreatedAt ?? DateTime.MinValue)
+            .ThenBy(message => message.Id)
+            .ToListAsync();
+
+        RepairLikelyReversedPairs(messages);
+
+        for (var index = 0; index < messages.Count; index++)
+        {
+            messages[index].SequenceNumber = index + 1;
+        }
+    }
+
+    await context.SaveChangesAsync();
+}
+
+static void RepairLikelyReversedPairs(List<Message> messages)
+{
+    for (var index = 0; index < messages.Count - 1; index++)
+    {
+        var current = messages[index];
+        var next = messages[index + 1];
+
+        if (!IsBotMessage(current) || !IsUserMessage(next))
+        {
+            continue;
+        }
+
+        var currentTime = current.CreatedAt ?? DateTime.MinValue;
+        var nextTime = next.CreatedAt ?? DateTime.MinValue;
+        var gap = nextTime - currentTime;
+
+        if (gap < TimeSpan.Zero || gap > TimeSpan.FromMinutes(2))
+        {
+            continue;
+        }
+
+        messages[index] = next;
+        messages[index + 1] = current;
+        index++;
+    }
+}
+
+static bool IsUserMessage(Message message) =>
+    string.Equals(message.SenderType, "User", StringComparison.OrdinalIgnoreCase);
+
+static bool IsBotMessage(Message message) =>
+    string.Equals(message.SenderType, "Bot", StringComparison.OrdinalIgnoreCase);

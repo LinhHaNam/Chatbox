@@ -306,6 +306,7 @@ public class ChatController : ControllerBase
         {
             Id = message.Id,
             SessionId = message.SessionId,
+            SequenceNumber = message.SequenceNumber,
             SenderType = message.SenderType,
             Content = message.Content,
             CreatedAt = message.CreatedAt
