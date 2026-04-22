@@ -22,6 +22,9 @@ const getSortedMessages = (messages = []) =>
     })
     .map(({ message }) => message);
 
+const isUserMessage = (message) =>
+  String(message?.senderType || '').trim().toLowerCase() === 'user';
+
 export default function ChatWindow({
   session,
   onSendMessage,
@@ -71,11 +74,9 @@ export default function ChatWindow({
         {hasMessages ? (
           <div className="messages-list">
             {sortedMessages.map((message) => (
-              <div
-                key={message.id}
-                className={`message ${message.senderType === 'User' ? 'user-message' : 'bot-message'}`}
-              >
-                <div className="message-content">
+              <div key={message.id} className={`message ${isUserMessage(message) ? 'user-message' : 'bot-message'}`}>
+                <div className="message-bubble">
+                  <div className="message-author">{isUserMessage(message) ? 'Ban' : 'Simsimi'}</div>
                   <p>{message.content}</p>
                   <span className="message-time">{formatVietnamTime(message.createdAt)}</span>
                 </div>
