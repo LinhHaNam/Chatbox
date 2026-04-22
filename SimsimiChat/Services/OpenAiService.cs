@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 using SimsimiChat.Configuration;
+using SimsimiChat.Models;
 using SimsimiChat.Models.Dtos;
 
 namespace SimsimiChat.Services;
@@ -32,7 +33,7 @@ internal class GeminiResponse
 
 public interface IAiService
 {
-    Task<string> GetResponseAsync(string userMessage, RudenessLevel rudenessLevel);
+    Task<string> GetResponseAsync(string userMessage, RudenessLevel rudenessLevel, IReadOnlyList<Message>? sessionMessages = null);
 }
 
 public class OpenAiService : IAiService
@@ -54,7 +55,7 @@ public class OpenAiService : IAiService
         }
     }
 
-    public async Task<string> GetResponseAsync(string userMessage, RudenessLevel rudenessLevel)
+    public async Task<string> GetResponseAsync(string userMessage, RudenessLevel rudenessLevel, IReadOnlyList<Message>? sessionMessages = null)
     {
         if (string.IsNullOrWhiteSpace(userMessage))
         {
@@ -68,8 +69,7 @@ public class OpenAiService : IAiService
         {
             try
             {
-                var systemPrompt = GetSystemPrompt(rudenessLevel);
-                var fullPrompt = $"{systemPrompt}\n\nUser: {userMessage}";
+                var fullPrompt = BuildConversationPrompt(userMessage, rudenessLevel, sessionMessages);
 
                 var requestBody = new
                 {
@@ -203,6 +203,101 @@ public class OpenAiService : IAiService
             _ => 
                 "You are a helpful assistant. Provide clear and concise answers."
         };
+    }
+
+    private string BuildConversationPrompt(string userMessage, RudenessLevel rudenessLevel, IReadOnlyList<Message>? sessionMessages)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine(GetSystemPrompt(rudenessLevel));
+        builder.AppendLine();
+        builder.AppendLine("Use the session context below to keep the conversation consistent. If the context conflicts with the latest user message, prioritize the latest user message.");
+
+        var sanitizedMessages = sessionMessages?
+            .Where(m => m != null && !string.IsNullOrWhiteSpace(m.Content))
+            .OrderBy(m => m.CreatedAt ?? DateTime.MinValue)
+            .ToList() ?? new List<Message>();
+
+        if (sanitizedMessages.Count > 0)
+        {
+            var summary = BuildSessionSummary(sanitizedMessages);
+            if (!string.IsNullOrWhiteSpace(summary))
+            {
+                builder.AppendLine();
+                builder.AppendLine("Session summary:");
+                builder.AppendLine(summary);
+            }
+
+            var recentTranscript = BuildRecentTranscript(sanitizedMessages);
+            if (!string.IsNullOrWhiteSpace(recentTranscript))
+            {
+                builder.AppendLine();
+                builder.AppendLine("Recent conversation:");
+                builder.AppendLine(recentTranscript);
+            }
+        }
+
+        builder.AppendLine();
+        builder.AppendLine("Latest user message:");
+        builder.AppendLine($"User: {userMessage.Trim()}");
+        builder.AppendLine();
+        builder.Append("Reply as the assistant, taking the full session context into account.");
+
+        return builder.ToString();
+    }
+
+    private string BuildSessionSummary(IReadOnlyList<Message> sessionMessages)
+    {
+        const int summarySourceLimit = 12;
+        const int summaryItemCharLimit = 220;
+
+        if (sessionMessages.Count <= 6)
+        {
+            return "This session is still short. Use the recent conversation directly.";
+        }
+
+        var olderMessages = sessionMessages
+            .Take(Math.Max(0, sessionMessages.Count - 6))
+            .TakeLast(summarySourceLimit)
+            .Select(message =>
+            {
+                var speaker = NormalizeSenderType(message.SenderType);
+                var content = TrimContent(message.Content, summaryItemCharLimit);
+                return $"{speaker}: {content}";
+            });
+
+        return string.Join("\n", olderMessages);
+    }
+
+    private string BuildRecentTranscript(IReadOnlyList<Message> sessionMessages)
+    {
+        const int recentMessageLimit = 6;
+        const int transcriptCharLimit = 350;
+
+        return string.Join(
+            "\n",
+            sessionMessages
+                .TakeLast(recentMessageLimit)
+                .Select(message =>
+                {
+                    var speaker = NormalizeSenderType(message.SenderType);
+                    var content = TrimContent(message.Content, transcriptCharLimit);
+                    return $"{speaker}: {content}";
+                }));
+    }
+
+    private static string NormalizeSenderType(string? senderType)
+    {
+        return string.Equals(senderType, "Bot", StringComparison.OrdinalIgnoreCase)
+            ? "Assistant"
+            : "User";
+    }
+
+    private static string TrimContent(string content, int maxLength)
+    {
+        var normalized = content.Replace("\r", " ").Replace("\n", " ").Trim();
+        return normalized.Length <= maxLength
+            ? normalized
+            : $"{normalized[..maxLength]}...";
     }
 
     private float GetTemperatureByRudeness(RudenessLevel rudenessLevel)

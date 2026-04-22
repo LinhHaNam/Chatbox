@@ -3,3 +3,7 @@ appsettings.Development.json
 .env.local
 
 node_modules/
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user

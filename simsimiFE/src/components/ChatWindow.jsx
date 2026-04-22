@@ -3,6 +3,25 @@ import MessageInput from './MessageInput';
 import '../styles/ChatWindow.css';
 import { formatVietnamDate, formatVietnamTime } from '../utils/dateTime';
 
+const getMessageTimestamp = (message) => {
+  const value = message?.createdAt;
+  const timestamp = value ? new Date(value).getTime() : Number.NaN;
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const getSortedMessages = (messages = []) =>
+  [...messages]
+    .map((message, index) => ({ message, index }))
+    .sort((left, right) => {
+      const timestampDiff = getMessageTimestamp(left.message) - getMessageTimestamp(right.message);
+      if (timestampDiff !== 0) {
+        return timestampDiff;
+      }
+
+      return left.index - right.index;
+    })
+    .map(({ message }) => message);
+
 export default function ChatWindow({
   session,
   onSendMessage,
@@ -13,11 +32,12 @@ export default function ChatWindow({
 }) {
   const messagesEndRef = useRef(null);
   const sessionDate = session?.lastActiveAt || session?.startedAt;
-  const hasMessages = Array.isArray(session?.messages) && session.messages.length > 0;
+  const sortedMessages = getSortedMessages(session?.messages || []);
+  const hasMessages = sortedMessages.length > 0;
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [session?.messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [sortedMessages]);
 
   return (
     <div className="chat-window">
@@ -50,7 +70,7 @@ export default function ChatWindow({
       <div className={`messages-container ${hasMessages ? 'has-messages' : 'is-empty'}`}>
         {hasMessages ? (
           <div className="messages-list">
-            {session.messages.map((message) => (
+            {sortedMessages.map((message) => (
               <div
                 key={message.id}
                 className={`message ${message.senderType === 'User' ? 'user-message' : 'bot-message'}`}

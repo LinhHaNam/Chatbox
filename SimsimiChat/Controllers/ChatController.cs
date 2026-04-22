@@ -211,8 +211,10 @@ public class ChatController : ControllerBase
                 "User", 
                 request.Content);
 
+            var sessionMessages = await _chatService.GetSessionMessagesAsync(request.SessionId);
+
             // Get AI response
-            var aiResponse = await _aiService.GetResponseAsync(request.Content, request.RudenessLevel);
+            var aiResponse = await _aiService.GetResponseAsync(request.Content, request.RudenessLevel, sessionMessages);
 
             // Save AI response
             var botMessage = await _chatService.SaveMessageAsync(

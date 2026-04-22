@@ -15,8 +15,23 @@ export default function ChatSidebar({
 }) {
   const getSessionDate = (session) => session?.lastActiveAt || session?.startedAt;
 
+  const getSortedMessages = (messages = []) =>
+    [...messages]
+      .map((message, index) => ({ message, index }))
+      .sort((left, right) => {
+        const leftTime = left.message?.createdAt ? new Date(left.message.createdAt).getTime() : 0;
+        const rightTime = right.message?.createdAt ? new Date(right.message.createdAt).getTime() : 0;
+
+        if (leftTime !== rightTime) {
+          return leftTime - rightTime;
+        }
+
+        return left.index - right.index;
+      })
+      .map(({ message }) => message);
+
   const getSessionTitle = (session) => {
-    const firstUserMessage = session?.messages?.find(
+    const firstUserMessage = getSortedMessages(session?.messages || []).find(
       (message) => message.senderType === 'User' && message.content?.trim()
     );
 

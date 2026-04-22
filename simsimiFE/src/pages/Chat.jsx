@@ -9,6 +9,49 @@ import '../styles/Chat.css';
 const DEFAULT_RUDENESS_STORAGE_KEY = 'defaultRudenessLevel';
 const MOBILE_BREAKPOINT = 768;
 
+const getMessageTimestamp = (message) => {
+  const value = message?.createdAt;
+  const timestamp = value ? new Date(value).getTime() : Number.NaN;
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const getSessionTimestamp = (session) => {
+  const value = session?.lastActiveAt || session?.startedAt;
+  const timestamp = value ? new Date(value).getTime() : Number.NaN;
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const sortMessagesChronologically = (messages = []) =>
+  [...messages]
+    .map((message, index) => ({ message, index }))
+    .sort((left, right) => {
+      const timestampDiff = getMessageTimestamp(left.message) - getMessageTimestamp(right.message);
+      if (timestampDiff !== 0) {
+        return timestampDiff;
+      }
+
+      return left.index - right.index;
+    })
+    .map(({ message }) => message);
+
+const normalizeSession = (session) => ({
+  ...session,
+  messages: sortMessagesChronologically(session?.messages || []),
+});
+
+const sortSessionsByLastActivity = (sessions = []) =>
+  [...sessions]
+    .map((session, index) => ({ session: normalizeSession(session), index }))
+    .sort((left, right) => {
+      const timestampDiff = getSessionTimestamp(right.session) - getSessionTimestamp(left.session);
+      if (timestampDiff !== 0) {
+        return timestampDiff;
+      }
+
+      return left.index - right.index;
+    })
+    .map(({ session }) => session);
+
 export default function ChatPage() {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
@@ -31,10 +74,11 @@ export default function ChatPage() {
   const syncSessionState = (updatedSession) => {
     if (!updatedSession?.id) return;
 
-    setCurrentSession(updatedSession);
+    const normalizedSession = normalizeSession(updatedSession);
+    setCurrentSession(normalizedSession);
     setSessions((prevSessions) => {
-      const remainingSessions = prevSessions.filter((session) => session.id !== updatedSession.id);
-      return [updatedSession, ...remainingSessions];
+      const remainingSessions = prevSessions.filter((session) => session.id !== normalizedSession.id);
+      return sortSessionsByLastActivity([normalizedSession, ...remainingSessions]);
     });
   };
 
@@ -81,7 +125,7 @@ export default function ChatPage() {
       setLoading(true);
       const response = await api.getUserSessions();
       if (response.success) {
-        setSessions(response.data || []);
+        setSessions(sortSessionsByLastActivity(response.data || []));
       }
     } catch (err) {
       setError('Khong the tai danh sach cuoc tro chuyen');
@@ -165,7 +209,9 @@ export default function ChatPage() {
   const handleDeleteSession = async (sessionId) => {
     try {
       await api.deleteSession(sessionId);
-      const remainingSessions = sessions.filter((session) => session.id !== sessionId);
+      const remainingSessions = sortSessionsByLastActivity(
+        sessions.filter((session) => session.id !== sessionId)
+      );
       setSessions(remainingSessions);
 
       if (currentSessionId === sessionId) {
