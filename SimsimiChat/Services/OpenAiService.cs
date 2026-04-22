@@ -86,7 +86,7 @@ public class OpenAiService : IAiService
                     generationConfig = new
                     {
                         temperature = GetTemperatureByRudeness(rudenessLevel),
-                        maxOutputTokens = 500
+                        maxOutputTokens = 2000
                     }
                 };
 
