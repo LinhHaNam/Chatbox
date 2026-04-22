@@ -35,7 +35,6 @@ services:
       Jwt__AccessTokenExpirationMinutes: 15
       Jwt__RefreshTokenExpirationDays: 7
 
-      # --- CẤU HÌNH OPENAI (Để tránh lỗi tiếp theo) ---
       OpenAI__ApiKey: "${GEMINI_API_KEY}"
       OpenAI__Model: "gemini-2.5-flash"
       
@@ -61,6 +60,19 @@ services:
       - backend
     networks:
       - simsimi-network
+
+  # --- THÊM DUCKDNS VÀO ĐÂY ---
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: simsimi-duckdns
+    network_mode: host # Quan trọng: Dùng host để lấy đúng IP Public của modem
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Ho_Chi_Minh
+      - SUBDOMAINS=${DUCKDNS_SUBDOMAINS} # Ví dụ: simsimi-linh
+      - TOKEN=${DUCKDNS_TOKEN}           # Lấy từ trang chủ DuckDNS
+    restart: unless-stopped
 
 networks:
   simsimi-network:

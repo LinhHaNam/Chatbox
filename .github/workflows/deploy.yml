@@ -18,6 +18,8 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DUCKDNS_TOKEN: ${{ secrets.DUCKDNS_TOKEN }}
+          DUCKDNS_SUBDOMAINS: ${{ secrets.DUCKDNS_SUBDOMAINS }}
         shell: powershell
         run: |
           # 1. TẠO FILE .ENV CHO FRONTEND
